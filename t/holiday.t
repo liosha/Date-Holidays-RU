@@ -6,7 +6,7 @@ use Test::Exception;
 use Test::Warn;
 
 BEGIN {
-	use_ok( 'Date::Holidays::RU', qw( is_holiday is_ru_holiday ) );
+    use_ok( 'Date::Holidays::RU', qw( is_holiday is_ru_holiday ) );
 }
 
 diag( "Testing Date::Holidays::RU $Date::Holidays::RU::VERSION, Perl $]" );
@@ -28,13 +28,17 @@ ok is_holiday( 2030, 11, 4 ), q{my daughter's birthday always will be holiday :)
 
 is is_ru_holiday( 2015, 1, 1 ), is_holiday( 2015, 1, 1 ), 'alias';
 
-dies_ok { is_holiday( 2015, 10, 05, 'invalid_region' ) } 'invalid region';
-is is_holiday( 2015, 10, 05, 'AD' ), 'День образования Республики Адыгея', 'local holiday';
-ok !is_holiday( 2015, 10, 05 ), 'local holiday in the whole country';
-ok !is_holiday( 2015, 10, 05, 'BA' ), 'local holiday in other region';
-is is_holiday( 2015, 10, 05, 'RU-AD' ), 'День образования Республики Адыгея', 'region alias';
-is is_holiday( 2015, 02, 22, 'AL' ), 'Чага-Байрам', 'local holiday with hash tabulator';
-warning_like {is_holiday( 3015, 02, 22, 'AL' )} qr/expected but not defined/, 'undefined year in hash tabulator';
-is is_holiday( 2015, 04, 21, 'SAR' ), 'Радоница - день поминовения усопших', 'radonitsa calculation';
+dies_ok { is_holiday( 2015, 10, 5, 'invalid_region' ) } 'invalid region';
+is is_holiday( 2015, 10, 5, 'AD' ), 'День образования Республики Адыгея', 'local holiday';
+ok !is_holiday( 2015, 10, 5 ), 'local holiday in the whole country';
+ok !is_holiday( 2015, 10, 5, 'BA' ), 'local holiday in other region';
+is is_holiday( 2015, 10, 5, 'RU-AD' ), 'День образования Республики Адыгея', 'region alias';
+is is_holiday( 2015, 2, 22, 'AL' ), 'Чага-Байрам', 'local holiday with hash tabulator';
+warning_like {is_holiday( 3015, 2, 22, 'AL' )} qr/expected but not defined/, 'undefined year in hash tabulator';
+is is_holiday( 2015, 4, 21, 'SAR' ), 'Радоница - день поминовения усопших', 'radonitsa calculation';
+
+is is_holiday( 2012, 8, 19, 'TA' ), 'Ураза-Байрам', 'eid_al_adha default';
+is is_holiday( 2014, 7, 28, 'TA' ), 'Ураза-Байрам', 'eid_al_adha adjusted';
+
 
 done_testing();

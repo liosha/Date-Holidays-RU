@@ -388,13 +388,19 @@ my %REGIONAL_HOLIDAYS = (
         eid_al_fitr => {
             name => 'Ураза-Байрам',
             days => {
-                2011 => \&_calc_eid_al_fitr_date,
+                2011 => _get_tabulator(
+                    { 2015 => '0717', 2014 => '0728', 2013 => '0808', 2011 => '0830' },
+                    \&_calc_eid_al_fitr_date
+                ),
             },
         },
         eid_al_adha => {
             name => 'Курбан-Байрам',
             days => {
-                1992 => \&_calc_eid_al_adha_date,
+                1992 => _get_tabulator(
+                    { 2014 => '1005', 2013 => '1015', 2012 => '1025', 2011 => '1106' },
+                    \&_calc_eid_al_adha_date,
+                )
             },
         },
     },
@@ -485,21 +491,27 @@ sub _calc_radonitsa_date {
 }
 
 
-sub _calc_eid_al_fitr_date {
-    my $year = shift;
+sub _calc_hijri_date {
+    my ($year, $hm, $hd) = @_;
 
-    # todo: implement
+    my @results;
+    my (undef, undef, $hy) = g2h(1, 1, $year);
+    for my $dy (0 .. 2) {
+        my ($d, $m, $y) = h2g($hd, $hm, $hy + $dy);
+        next if $y != $year;
+        push @results, _get_date_key($m, $d);
+    }
 
-    return;
+    return \@results;
 }
 
+# note: draft calulation, real celebration day may vary +/-1
+sub _calc_eid_al_fitr_date {
+    return _calc_hijri_date(shift, 10, 1);
+}
 
 sub _calc_eid_al_adha_date {
-    my $year = shift;
-
-    # todo: implement
-
-    return;
+    return _calc_hijri_date(shift, 12, 10);
 }
 
 

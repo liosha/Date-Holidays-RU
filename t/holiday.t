@@ -35,5 +35,6 @@ ok !is_holiday( 2015, 10, 05, 'BA' ), 'local holiday in other region';
 is is_holiday( 2015, 10, 05, 'RU-AD' ), 'День образования Республики Адыгея', 'region alias';
 is is_holiday( 2015, 02, 22, 'AL' ), 'Чага-Байрам', 'local holiday with hash tabulator';
 warning_like {is_holiday( 3015, 02, 22, 'AL' )} qr/expected but not defined/, 'undefined year in hash tabulator';
+is is_holiday( 2015, 04, 21, 'SAR' ), 'Радоница - день поминовения усопших', 'radonitsa calculation';
 
 done_testing();

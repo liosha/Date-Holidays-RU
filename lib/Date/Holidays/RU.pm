@@ -54,6 +54,8 @@ use Carp;
 use Time::Piece;
 use List::Util qw/ first /;
 
+use Date::Easter;
+
 
 my $HOLIDAYS_VALID_SINCE = 1991;
 #my $BUSINESS_DAYS_VALID_SINCE = 2004;
@@ -207,7 +209,7 @@ my %REGIONAL_HOLIDAYS = (
         eid_al_fitr => {
             name => 'Ураза-Байрам',
             days => {
-                2006 => undef, # todo: tabulate or implement CODE descriptions
+                2006 => \&_calc_eid_al_fitr_date,
             },
         },
     },
@@ -236,13 +238,13 @@ my %REGIONAL_HOLIDAYS = (
         eid_al_fitr => {
             name => 'Ураза-Байрам',
             days => {
-                2011 => undef, # todo: tabulate or implement CODE descriptions
+                2011 => \&_calc_eid_al_fitr_date,
             },
         },
         eid_al_adha => {
             name => 'Курбан-Байрам',
             days => {
-                2011 => undef, # todo: tabulate or implement CODE descriptions
+                2011 => \&_calc_eid_al_adha_date,
             },
         },
     },
@@ -250,7 +252,7 @@ my %REGIONAL_HOLIDAYS = (
         tsagaan_sar => {
             name => 'Сагаалган',
             days => {
-                2009 => undef, # todo: tabulate
+                2009 => _get_tabulator({}), # todo: fill values
             },
         },
     },
@@ -270,13 +272,13 @@ my %REGIONAL_HOLIDAYS = (
         eid_al_fitr => {
             name => 'Ураза-Байрам',
             days => {
-                1991 => undef, # todo: tabulate or implement CODE descriptions
+                1991 => \&_calc_eid_al_fitr_date,
             },
         },
         eid_al_adha => {
             name => 'Курбан-Байрам',
             days => {
-                2000 => undef, # todo: tabulate or implement CODE descriptions
+                2000 => \&_calc_eid_al_adha_date,
             },
         },
     },
@@ -329,19 +331,19 @@ my %REGIONAL_HOLIDAYS = (
         tsagaan_sar => {
             name => 'Цаган Сар',
             days => {
-                2005 => undef, # todo: tabulate
+                2005 => _get_tabulator({}), # todo: fill values
             },
         },
         buddha_day => {
             name => 'День рождения Будды Шакьямуни',
             days => {
-                2005 => undef, # todo: tabulate
+                2005 => _get_tabulator({}), # todo: fill values
             },
         },
         zula => {
             name => 'Зул',
             days => {
-                2005 => undef, # todo: tabulate
+                2005 => _get_tabulator({}), # todo: fill values
             },
         },
     },
@@ -385,13 +387,13 @@ my %REGIONAL_HOLIDAYS = (
         eid_al_fitr => {
             name => 'Ураза-Байрам',
             days => {
-                2011 => undef, # todo: tabulate or implement CODE descriptions
+                2011 => \&_calc_eid_al_fitr_date,
             },
         },
         eid_al_adha => {
             name => 'Курбан-Байрам',
             days => {
-                1992 => undef, # todo: tabulate or implement CODE descriptions
+                1992 => \&_calc_eid_al_adha_date,
             },
         },
     },
@@ -411,13 +413,13 @@ my %REGIONAL_HOLIDAYS = (
         tsagaan_sar => {
             name => 'Шагаа',
             days => {
-                1999 => undef, # todo: tabulate
+                1999 => _get_tabulator({}), # todo: fill values
             },
         },
         naadym => {
             name => 'Наадым',
             days => {
-                1999 => undef, # todo: tabulate
+                1999 => _get_tabulator({}), # todo: fill values
             },
         },
     },
@@ -441,7 +443,7 @@ my %REGIONAL_HOLIDAYS = (
         radonitsa => {
             name => 'Радоница - день поминовения усопших',
             days => {
-                2012 => undef, # todo: tabulate or implement CODE descriptions
+                2012 => \&_calc_radonitsa_date,
             },
         },
     },
@@ -460,6 +462,34 @@ sub _get_tabulator {
 
     croak "Unsupported data type: <$type>";
 }
+
+
+# 9th day after orthodox easter
+sub _calc_radonitsa_date {
+    my $year = shift;
+    my ($month, $day) = orthodox_easter($year);
+    my $t = Time::Piece->strptime( "$year-$month-$day", '%Y-%m-%d' ) + 60*60*(1+24*9);
+    return _get_date_key($t->mon, $t->mday);
+}
+
+
+sub _calc_eid_al_fitr_date {
+    my $year = shift;
+
+    # todo: implement
+
+    return;
+}
+
+
+sub _calc_eid_al_adha_date {
+    my $year = shift;
+
+    # todo: implement
+
+    return;
+}
+
 
 
 =head2 is_holiday( $year, $month, $day, $region )

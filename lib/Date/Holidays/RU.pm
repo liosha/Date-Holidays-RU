@@ -55,6 +55,7 @@ use Time::Piece;
 use List::Util qw/ first /;
 
 use Date::Easter;
+use Date::Hijri;
 
 
 my $HOLIDAYS_VALID_SINCE = 1991;
@@ -453,14 +454,25 @@ my %REGIONAL_HOLIDAYS = (
 
 
 sub _get_tabulator {
-    my ($data) = @_;
+    my ($data, $default) = @_;
     my $type = ref $data;
 
     if ($type eq 'HASH') {
-        return sub { my $y = shift; $data->{$y} };
+        # data ok
+    }
+    else {
+        croak "Unsupported data type: <$type>";
     }
 
-    croak "Unsupported data type: <$type>";
+    return sub {
+        my $year = shift;
+        my $value = $data->{$year};
+        if ( $default && !defined $value ) {
+            $value = ref $default eq 'CODE' ? $default->($year): $default;
+        }
+        return $value;
+    };
+
 }
 
 

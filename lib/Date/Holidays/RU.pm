@@ -191,29 +191,275 @@ my %SHORT_BUSINESS_DAYS = (
 );
 
 
-# source: http://base.garant.ru/4029129/
+# sources:
+#   http://base.garant.ru/4029129/
+#   https://ru.wikipedia.org/wiki/%D0%9A%D0%B0%D1%82%D0%B5%D0%B3%D0%BE%D1%80%D0%B8%D1%8F:%D0%9F%D1%80%D0%B0%D0%B7%D0%B4%D0%BD%D0%B8%D0%BA%D0%B8_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B8
 # region codes are from ISO 3166-2: https://ru.wikipedia.org/wiki/ISO_3166-2:RU
+
 my %REGIONAL_HOLIDAYS = (
     AD => {
-        eid_al_fitr => {
-            name => 'Ураза-Байрам',
-            days => {
-                1995 => undef, # todo: tabulate or implement CODE descriptions
-            },
-        },
         republic_day => {
             name => 'День образования Республики Адыгея',
             days => {
-                1995 => '1005',
+                2006 => '1005',
+            },
+        },
+        eid_al_fitr => {
+            name => 'Ураза-Байрам',
+            days => {
+                2006 => undef, # todo: tabulate or implement CODE descriptions
             },
         },
     },
-    # more to come
+    AL => {
+        tsagaan_sar => {
+            name => 'Чага-Байрам',
+            days => {
+                2013 => _get_tabulator({ 2013 => '0217', 2014 => '0202', 2015 => '0222' }),
+            },
+        },
+    },
+    BA => {
+        republic_day => {
+            name => 'День Республики',
+            days => {
+                2005 => '1011',
+            },
+        },
+        constitution_day => {
+            name => 'День Конституции Республики Башкортостан',
+            days => {
+                2005 => '1224',
+                2011 => undef,
+            },
+        },
+        eid_al_fitr => {
+            name => 'Ураза-Байрам',
+            days => {
+                2011 => undef, # todo: tabulate or implement CODE descriptions
+            },
+        },
+        eid_al_adha => {
+            name => 'Курбан-Байрам',
+            days => {
+                2011 => undef, # todo: tabulate or implement CODE descriptions
+            },
+        },
+    },
+    BU => {
+        tsagaan_sar => {
+            name => 'Сагаалган',
+            days => {
+                2009 => undef, # todo: tabulate
+            },
+        },
+    },
+    DA => {
+        constitution_day => {
+            name => 'День Конституции Республики Дагестан',
+            days => {
+                1995 => '0726',
+            },
+        },
+        unity_day => {
+            name => 'День единства народов Дагестана',
+            days => {
+                2011 => '0915',
+            },
+        },
+        eid_al_fitr => {
+            name => 'Ураза-Байрам',
+            days => {
+                1991 => undef, # todo: tabulate or implement CODE descriptions
+            },
+        },
+        eid_al_adha => {
+            name => 'Курбан-Байрам',
+            days => {
+                2000 => undef, # todo: tabulate or implement CODE descriptions
+            },
+        },
+    },
+    IN => {
+        republic_day => {
+            name => 'День образования республики Ингушетия',
+            days => {
+                1996 => '0604',
+                2004 => undef,
+            },
+        },
+        # eid_al_fitr?
+        # eid_al_adha?
+    },
+    KB => {
+        revival_day => {
+            name => 'День возрождения балкарского народа',
+            days => {
+                1994 => '0328',
+            },
+        },
+        memorial_day => {
+            name => 'День памяти адыгов (черкесов) - жертв Русско-Кавказской войны',
+            days => {
+                1992 => '0521',
+            },
+        },
+        republic_day => {
+            name => 'День Республики',
+            days => {
+                1997 => '0901',
+            },
+        },
+        # eid_al_fitr?
+        # eid_al_adha?
+    },
+    KL => {
+        constitution_day => {
+            name => 'День принятия Степного Уложения (Конституции) Республики Калмыкия',
+            days => {
+                2005 => '0405',
+            },
+        },
+        memorial_day => {
+            name => 'День памяти жертв депортации калмыцкого народа',
+            days => {
+                2005 => '1228',
+            },
+        },
+        tsagaan_sar => {
+            name => 'Цаган Сар',
+            days => {
+                2005 => undef, # todo: tabulate
+            },
+        },
+        buddha_day => {
+            name => 'День рождения Будды Шакьямуни',
+            days => {
+                2005 => undef, # todo: tabulate
+            },
+        },
+        zula => {
+            name => 'Зул',
+            days => {
+                2005 => undef, # todo: tabulate
+            },
+        },
+    },
+    KC => {
+        revival_day => {
+            name => 'День возрождения карачаевского народа',
+            days => {
+                2001 => '0503',
+            },
+        },
+        # eid_al_fitr?
+        # eid_al_adha?
+    },
+    SA => {
+        republic_day => {
+            name => 'День Республики Саха (Якутия)',
+            days => {
+                1992 => '0427',
+            },
+        },
+        yhyakh => {
+            name => 'День национального  праздника "Ысыах"',
+            days => {
+                1992 => '0621',
+            },
+        },
+    },
+    TA => {
+        republic_day => {
+            name => 'День Республики Татарстан',
+            days => {
+                1992 => '0830',
+            },
+        },
+        constitution_day => {
+            name => 'День Конституции Республики Татарстан',
+            days => {
+                1992 => '1106',
+            },
+        },
+        eid_al_fitr => {
+            name => 'Ураза-Байрам',
+            days => {
+                2011 => undef, # todo: tabulate or implement CODE descriptions
+            },
+        },
+        eid_al_adha => {
+            name => 'Курбан-Байрам',
+            days => {
+                1992 => undef, # todo: tabulate or implement CODE descriptions
+            },
+        },
+    },
+    TY => {
+        constitution_day => {
+            name => 'День Конституции Республики Тыва',
+            days => {
+                1999 => '0506',
+            },
+        },
+        republic_day => {
+            name => 'День Республики Тыва',
+            days => {
+                1999  => '0815',
+            },
+        },
+        tsagaan_sar => {
+            name => 'Шагаа',
+            days => {
+                1999 => undef, # todo: tabulate
+            },
+        },
+        naadym => {
+            name => 'Наадым',
+            days => {
+                1999 => undef, # todo: tabulate
+            },
+        },
+    },
+    CE => {
+        peace_day => {
+            name => 'День мира в Чеченской Республике',
+            days => {
+                2010 => '0416',
+            },
+        },
+    },
+    CU => {
+        republic_day => {
+            name => 'День Республики',
+            days => {
+                2000 => '0624',
+            },
+        },
+    },
+    SAR => {
+        radonitsa => {
+            name => 'Радоница - день поминовения усопших',
+            days => {
+                2012 => undef, # todo: tabulate or implement CODE descriptions
+            },
+        },
+    },
 );
 
 
 
 
+sub _get_tabulator {
+    my ($data) = @_;
+    my $type = ref $data;
+
+    if ($type eq 'HASH') {
+        return sub { my $y = shift; $data->{$y} };
+    }
+
+    croak "Unsupported data type: <$type>";
+}
 
 
 =head2 is_holiday( $year, $month, $day, $region )
@@ -272,7 +518,13 @@ sub _get_regular_holidays_by_year {
     my %day;
     for my $holiday ( values %REGULAR_HOLIDAYS, values %{$REGIONAL_HOLIDAYS{$region} || {}} ) {
         my $days = _resolve_yhash_value($holiday->{days}, $year);
+    
+        if (ref $days eq 'CODE') {
+            $days = $days->($year);
+            carp "Value for $year is expected but not defined"  if !defined $days;
+        }
         next  if !$days;
+
         $days = [$days]  if !ref $days;
         next  if !@$days;
 
@@ -287,11 +539,14 @@ sub _get_regular_holidays_by_year {
 
 sub _resolve_yhash_value {
     my ($value, $year) = @_;
-    return $value  if ref $value ne 'HASH';
+    
+    if (ref $value eq 'HASH') {
+        my $ykey = first {$year >= $_} reverse sort keys %$value;
+        return  if !$ykey;
+        $value = $value->{$ykey};
+    }
 
-    my $ykey = first {$year >= $_} reverse sort keys %$value;
-    return  if !$ykey;
-    return $value->{$ykey};
+    return $value;
 }
 
 

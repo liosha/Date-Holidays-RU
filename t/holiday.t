@@ -3,6 +3,7 @@
 use utf8;
 use Test::More;
 use Test::Exception;
+use Test::Warn;
 
 BEGIN {
 	use_ok( 'Date::Holidays::RU', qw( is_holiday is_ru_holiday ) );
@@ -27,10 +28,12 @@ ok is_holiday( 2030, 11, 4 ), q{my daughter's birthday always will be holiday :)
 
 is is_ru_holiday( 2015, 1, 1 ), is_holiday( 2015, 1, 1 ), 'alias';
 
+dies_ok { is_holiday( 2015, 10, 05, 'invalid_region' ) } 'invalid region';
 is is_holiday( 2015, 10, 05, 'AD' ), 'День образования Республики Адыгея', 'local holiday';
-ok !is_holiday( 2015, 10, 05 ), 'local holiday in whole country';
+ok !is_holiday( 2015, 10, 05 ), 'local holiday in the whole country';
 ok !is_holiday( 2015, 10, 05, 'BA' ), 'local holiday in other region';
 is is_holiday( 2015, 10, 05, 'RU-AD' ), 'День образования Республики Адыгея', 'region alias';
-dies_ok { is_holiday( 2015, 10, 05, 'invalid_region' ) } 'invalid region';
+is is_holiday( 2015, 02, 22, 'AL' ), 'Чага-Байрам', 'local holiday with hash tabulator';
+warning_like {is_holiday( 3015, 02, 22, 'AL' )} qr/expected but not defined/, 'undefined year in hash tabulator';
 
 done_testing();

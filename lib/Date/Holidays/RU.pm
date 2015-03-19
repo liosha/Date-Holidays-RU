@@ -63,8 +63,8 @@ my $HOLIDAYS_VALID_SINCE = 1991;
 #   http://www.consultant.ru/popular/kzot/54_6.html#p530
 #   http://www.consultant.ru/document/cons_doc_LAW_127924/?frame=17#p1681
 
-my @REGULAR_HOLIDAYS = (
-    {
+my %REGULAR_HOLIDAYS = (
+    new_year => {
         name => {
             1948 => 'Новый год',
             2005 => 'Новогодние каникулы',
@@ -76,25 +76,25 @@ my @REGULAR_HOLIDAYS = (
             2013 => [ qw( 0101 0102 0103 0104 0105 0106 0108 ) ],
         },
     },
-    {
+    christmas => {
         name => 'Рождество Христово',
         days => {
             1991 => '0107', # maybe 1992
         },
     },
-    {
+    defenders_day => {
         name => 'День защитника Отечества',
         days => {
             2002 => '0223',
         },
     },
-    {
+    womens_day => {
         name => 'Международный женский день',
         days => {
             1966 => '0308',
         }
     },
-    {
+    workers_day => {
         name => {
             1965 => 'День международной солидарности трудящихся',
             1992 => 'Праздник Весны и Труда',
@@ -104,13 +104,13 @@ my @REGULAR_HOLIDAYS = (
             2005 => '0501',
         },
     },
-    {
+    victory_day => {
         name => 'День Победы',
         days => {
             1965 => '0509',
         },
     },
-    {
+    russia_day => {
         name => {
             1992 => 'День принятия декларации о государственном суверенитете Российской Федерации',
             2002 => 'День России',
@@ -119,13 +119,13 @@ my @REGULAR_HOLIDAYS = (
             1992 => '0612',
         },
     },
-    {
+    unity_day => {
         name => 'День народного единства',
         days => {
             2005 => '1104',
         },
     },
-    {
+    revolution_day => {
         name => {
             1965 => 'Годовщина Великой Октябрьской социалистической революции',
             1996 => 'День согласия и примирения',
@@ -136,7 +136,7 @@ my @REGULAR_HOLIDAYS = (
             2005 => undef,
         },
     },
-    {
+    constitution_day => {
         name => 'День Конституции Российской Федерации',
         days => {
             1994 => '1212',
@@ -191,20 +191,43 @@ my %SHORT_BUSINESS_DAYS = (
 );
 
 
-=head2 is_holiday( $year, $month, $day )
+# source: http://base.garant.ru/4029129/
+# region codes are from ISO 3166-2: https://ru.wikipedia.org/wiki/ISO_3166-2:RU
+my %REGIONAL_HOLIDAYS = (
+    AD => {
+        eid_al_fitr => {
+            name => 'Ураза-Байрам',
+            days => {
+                1995 => undef, # todo: tabulate or implement CODE descriptions
+            },
+        },
+        republic_day => {
+            name => 'День образования Республики Адыгея',
+            days => {
+                1995 => '1005',
+            },
+        },
+    },
+    # more to come
+);
+
+
+
+
+
+
+=head2 is_holiday( $year, $month, $day, $region )
 
 Determine whether this date is a RU holiday. Returns holiday name or undef.
 
 =cut
 
 sub is_holiday {
-    my ( $year, $month, $day ) = @_;
+    my ( $year, $month, $day, $region ) = @_;
 
     croak 'Bad params'  unless $year && $month && $day;
 
-    $_ = '0' . $_  for grep { length == 1 } $month, $day;
-
-    return holidays( $year )->{ $month . $day };
+    return holidays($year, $region)->{ _get_date_key($month, $day) };
 }
 
 =head2 is_ru_holiday( $year, $month, $day )
@@ -225,25 +248,29 @@ Returns hash ref of all RU holidays in the year.
 
 my %cache;
 sub holidays {
-    my $year = shift or croak 'Bad year';
+    my ($year, $region) = @_;
+    croak 'Bad year'  if !$year;
+    $region = _get_region_key($region);
 
-    return $cache{ $year }  if $cache{ $year };
+    my $cache_key = $year . $region;
+    return $cache{$cache_key}  if $cache{$cache_key};
 
-    my $holidays = _get_regular_holidays_by_year($year);
+    my $holidays = _get_regular_holidays_by_year($year, $region);
 
+    # todo: local specials
     if ( my $spec = $HOLIDAYS_SPECIAL{ $year } ) {
         $holidays->{ $_ } = 'Перенос праздничного дня'  for @$spec;
     }
 
-    return $cache{ $year } = $holidays;
+    return $cache{$cache_key} = $holidays;
 }
 
 sub _get_regular_holidays_by_year {
-    my ($year) = @_;
+    my ($year, $region) = @_;
     croak "RU holidays is not valid before $HOLIDAYS_VALID_SINCE"  if $year < $HOLIDAYS_VALID_SINCE;
 
     my %day;
-    for my $holiday (@REGULAR_HOLIDAYS) {
+    for my $holiday ( values %REGULAR_HOLIDAYS, values %{$REGIONAL_HOLIDAYS{$region} || {}} ) {
         my $days = _resolve_yhash_value($holiday->{days}, $year);
         next  if !$days;
         $days = [$days]  if !ref $days;
@@ -279,8 +306,6 @@ sub is_business_day {
 
     croak 'Bad params'  unless $year && $month && $day;
 
-    $_ = '0' . $_  for grep { length == 1 } $month, $day;
-
     return 0  if is_holiday( $year, $month, $day );
 
     # check if date is a weekend
@@ -291,7 +316,7 @@ sub is_business_day {
     # check if date is a business day on weekend
     my $ref = $BUSINESS_DAYS_ON_WEEKENDS{ $year } or return 0;
 
-    my $md = $month . $day;
+    my $md = _get_date_key($month, $day);
     for ( @$ref ) {
         return 1  if $_ eq $md;
     }
@@ -310,8 +335,25 @@ sub is_short_business_day {
 
     my $short_days_ref = $SHORT_BUSINESS_DAYS{ $year } or return 0;
 
-    my $date_key = sprintf '%02d%02d', $month, $day;
+    my $date_key = _get_date_key($month, $day);
     return !!grep { $_ eq $date_key } @$short_days_ref;
+}
+
+
+sub _get_date_key {
+    my ($month, $day) = @_;
+    return sprintf '%02d%02d', $month, $day;
+}
+
+
+sub _get_region_key {
+    my ($region) = @_;
+    return q{}  if !$region;
+
+    $region =~ s/^RU-//ix;
+    # todo: list check
+    croak "Unknown RU region: <$region>"  if $region !~ /^\w{2,3}$/x;
+    return uc $region;
 }
 
 =head1 AUTHOR

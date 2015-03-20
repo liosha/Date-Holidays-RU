@@ -388,19 +388,13 @@ my %REGIONAL_HOLIDAYS = (
         eid_al_fitr => {
             name => 'Ураза-Байрам',
             days => {
-                2011 => _get_tabulator(
-                    { 2015 => '0717', 2014 => '0728', 2013 => '0808', 2011 => '0830' },
-                    \&_calc_eid_al_fitr_date
-                ),
+                2011 => \&_calc_eid_al_fitr_date,
             },
         },
         eid_al_adha => {
             name => 'Курбан-Байрам',
             days => {
-                1992 => _get_tabulator(
-                    { 2014 => '1005', 2013 => '1015', 2012 => '1025', 2011 => '1106' },
-                    \&_calc_eid_al_adha_date,
-                )
+                1992 => \&_calc_eid_al_adha_date,
             },
         },
     },
@@ -486,8 +480,26 @@ sub _get_tabulator {
 sub _calc_radonitsa_date {
     my $year = shift;
     my ($month, $day) = orthodox_easter($year);
-    my $t = Time::Piece->strptime( "$year-$month-$day", '%Y-%m-%d' ) + 60*60*(1+24*9);
+    my $t = Time::Piece->strptime( "$year-$month-$day", '%Y-%m-%d' ) + 60*60*(6+24*9);
     return _get_date_key($t->mon, $t->mday);
+}
+
+
+# known dates are for TA
+{
+my $known_date = { 2015 => '0717', 2014 => '0728', 2013 => '0808', 2011 => '0830' };
+sub _calc_eid_al_fitr_date {
+    my $year = shift;
+    return $known_date->{$year} || _calc_hijri_date($year, 10, 1);
+}
+}
+
+{
+my $known_date = { 2014 => '1005', 2013 => '1015', 2012 => '1025', 2011 => '1106' };
+sub _calc_eid_al_adha_date {
+    my $year = shift;
+    return $known_date->{$year} || _calc_hijri_date($year, 12, 10);
+}
 }
 
 
@@ -504,16 +516,6 @@ sub _calc_hijri_date {
 
     return \@results;
 }
-
-# note: draft calulation, real celebration day may vary +/-1
-sub _calc_eid_al_fitr_date {
-    return _calc_hijri_date(shift, 10, 1);
-}
-
-sub _calc_eid_al_adha_date {
-    return _calc_hijri_date(shift, 12, 10);
-}
-
 
 
 =head2 is_holiday( $year, $month, $day, $region )
@@ -604,18 +606,18 @@ sub _resolve_yhash_value {
 }
 
 
-=head2 is_business_day( $year, $month, $day )
+=head2 is_business_day( $year, $month, $day, $region )
 
 Returns true if date is a business day in RU taking holidays and weekends into account.
 
 =cut
 
 sub is_business_day {
-    my ( $year, $month, $day ) = @_;
+    my ( $year, $month, $day, $region ) = @_;
 
     croak 'Bad params'  unless $year && $month && $day;
 
-    return 0  if is_holiday( $year, $month, $day );
+    return 0  if is_holiday( $year, $month, $day, $region );
 
     # check if date is a weekend
     my $t = Time::Piece->strptime( "$year-$month-$day", '%Y-%m-%d' );

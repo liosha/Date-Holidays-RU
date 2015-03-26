@@ -222,6 +222,7 @@ my %REGIONAL_HOLIDAYS = (
             },
         },
     },
+    # http://variant52.ru/kalendar/proizvodstvennyj-kalendar-rb-2015.htm
     BA => {
         republic_day => {
             name => 'День Республики',
@@ -233,19 +234,19 @@ my %REGIONAL_HOLIDAYS = (
             name => 'День Конституции Республики Башкортостан',
             days => {
                 2005 => '1224',
-                2011 => undef,
+                2010 => undef,
             },
         },
         eid_al_fitr => {
             name => 'Ураза-Байрам',
             days => {
-                2011 => \&_calc_eid_al_fitr_date,
+                2005 => \&_calc_eid_al_fitr_date,
             },
         },
         eid_al_adha => {
             name => 'Курбан-Байрам',
             days => {
-                2011 => \&_calc_eid_al_adha_date,
+                2005 => \&_calc_eid_al_adha_date,
             },
         },
     },
@@ -372,6 +373,7 @@ my %REGIONAL_HOLIDAYS = (
             },
         },
     },
+    # http://mtsz.tatarstan.ru/rus/info.php?id=131384
     TA => {
         republic_day => {
             name => 'День Республики Татарстан',
@@ -485,8 +487,7 @@ sub _calc_radonitsa_date {
 }
 
 
-# known dates are for TA, check for other regions
-# http://mtsz.tatarstan.ru/rus/info.php?id=131384
+# known dates are for TA & BA, check for other regions
 {
 my $known_eid_al_fitr_date = {
     2015 => '0717',
@@ -494,6 +495,11 @@ my $known_eid_al_fitr_date = {
     2013 => '0808',
     2012 => '0819',
     2011 => '0830',
+    2010 => '0909',
+    2009 => '0920',
+    2008 => '0930',
+    2007 => '1012',
+    2006 => '1023',
 };
 sub _calc_eid_al_fitr_date {
     my $year = shift;
@@ -509,6 +515,10 @@ my $known_eid_al_adha_date = {
     2012 => '1025',
     2011 => '1106',
     2010 => '1116',
+    2009 => '1127',
+    2008 => '1208',
+    2007 => '1220',
+    2006 => ['0110', '1231'],
 };
 sub _calc_eid_al_adha_date {
     my $year = shift;

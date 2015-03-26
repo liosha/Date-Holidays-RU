@@ -200,6 +200,7 @@ my %SHORT_BUSINESS_DAYS = (
 # region codes are from ISO 3166-2: https://ru.wikipedia.org/wiki/ISO_3166-2:RU
 
 my %REGIONAL_HOLIDAYS = (
+    # http://mintrud-ra.org/partner/
     AD => {
         republic_day => {
             name => 'День образования Республики Адыгея',
@@ -250,11 +251,12 @@ my %REGIONAL_HOLIDAYS = (
             },
         },
     },
+    # http://www.regionz.ru/index.php?num1=&set=%C1%F3%F0%FF%F2%E8%FF&date_from=1991-01-01&date_to=2013-12-31&num=%EA%E0%EB%E5%ED%E4%E0%F0%FC
     BU => {
         tsagaan_sar => {
-            name => 'Сагаалган',
+            name => 'Праздник Белого месяца "Сагаалган"',
             days => {
-                2009 => _get_tabulator({}), # todo: fill values
+                2009 => _get_tabulator({2011 => '0203', 2012 => '0222', 2013 => '0211', 2014 => '0131', 2015 => '0219' }),
             },
         },
     },

@@ -485,24 +485,39 @@ sub _calc_radonitsa_date {
 }
 
 
-# known dates are for TA
+# known dates are for TA, check for other regions
+# http://mtsz.tatarstan.ru/rus/info.php?id=131384
 {
-my $known_date = { 2015 => '0717', 2014 => '0728', 2013 => '0808', 2011 => '0830' };
+my $known_eid_al_fitr_date = {
+    2015 => '0717',
+    2014 => '0728',
+    2013 => '0808',
+    2012 => '0819',
+    2011 => '0830',
+};
 sub _calc_eid_al_fitr_date {
     my $year = shift;
-    return $known_date->{$year} || _calc_hijri_date($year, 10, 1);
+    return $known_eid_al_fitr_date->{$year} || _calc_hijri_date($year, 10, 1-1); # -1 gives better guess
 }
 }
 
 {
-my $known_date = { 2014 => '1005', 2013 => '1015', 2012 => '1025', 2011 => '1106' };
+my $known_eid_al_adha_date = {
+    2015 => '0924',
+    2014 => '1004',
+    2013 => '1015',
+    2012 => '1025',
+    2011 => '1106',
+    2010 => '1116',
+};
 sub _calc_eid_al_adha_date {
     my $year = shift;
-    return $known_date->{$year} || _calc_hijri_date($year, 12, 10);
+    return $known_eid_al_adha_date->{$year} || _calc_hijri_date($year, 12, 10-1); # -1 gives better guess
 }
 }
 
 
+# rough calc for islamic dates, result is +-1 day
 sub _calc_hijri_date {
     my ($year, $hm, $hd) = @_;
 
